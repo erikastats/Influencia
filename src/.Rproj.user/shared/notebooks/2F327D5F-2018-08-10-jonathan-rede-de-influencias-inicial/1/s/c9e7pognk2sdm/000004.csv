@@ -1,0 +1,7 @@
+"0","todas_influencias <- rbind(influencias, influencia_dos_influenciadores)"
+"0","#Não precisa entender muito bem isso aqui por enquanto"
+"0","todos_artistas <- union(todas_influencias$artista, todas_influencias$influenciado_por)"
+"0","nodes <- data.frame(id=1:length(todos_artistas), label=todos_artistas, group=factor(todos_artistas %in% artistas$Nome))"
+"0","edges <- data.frame(from=as.numeric(factor(todas_influencias$artista, levels=todos_artistas)),"
+"0","                    to=as.numeric(factor(todas_influencias$influenciado_por, levels=todos_artistas)),"
+"0","                    arrows=""to"")"

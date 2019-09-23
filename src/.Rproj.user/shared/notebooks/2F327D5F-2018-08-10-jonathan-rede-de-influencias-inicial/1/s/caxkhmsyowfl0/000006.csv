@@ -1,0 +1,7 @@
+"0","#Cria um DataFrame com os artistas únicos (exlui os repetidos)"
+"0","artistas_influenciadores <- data.frame(Nome=as.character(unique(influencias$influenciado_por)),"
+"0","                                       Link=as.character(unique(influencias$link_artista_influencia)),"
+"0","                                       stringsAsFactors = FALSE)"
+"0","# Remove casos inválidos e os artistas que já foram capturados (ou seja, já estão em artistas$Link)"
+"0","artistas_a_extrair <- !is.na(artistas_influenciadores$Nome) & !(artistas_influenciadores$Link %in% artistas$Link)"
+"0","artistas_influenciadores <- artistas_influenciadores[artistas_a_extrair,]"

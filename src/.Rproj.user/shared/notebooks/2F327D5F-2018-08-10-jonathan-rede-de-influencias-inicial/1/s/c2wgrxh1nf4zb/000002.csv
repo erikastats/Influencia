@@ -1,0 +1,6 @@
+"0","# Bibliotecas"
+"0","library(tidyverse)"
+"0","library(rvest)"
+"0","library(igraph)"
+"0","library(visNetwork)"
+"0","source(""parse_influencias_wikipedia.R"")"

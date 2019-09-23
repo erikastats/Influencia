@@ -1,0 +1,7 @@
+
+
+new_df_resultado <- mapply(extrair_influencias, artistas_influencias$Link, artistas_influencias$Nome, SIMPLIFY=FALSE, USE.NAMES=FALSE)
+new_df_resultado <- do.call(rbind, new_df_resultado)
+
+influencias <- rbind(df_resultado ,new_df_resultado)
+

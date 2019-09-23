@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1533932118435.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3912910739",
+    "id" : "E5027FB5",
+    "lastKnownWriteTime" : 1533933456,
+    "last_content_update" : 1533933456914,
+    "path" : "~/Workspace/influencia-artistas-brasileiros/src/parse_influencias_wikipedia.R",
+    "project_path" : "parse_influencias_wikipedia.R",
+    "properties" : {
+        "cursorPosition" : "37,25",
+        "docOutlineVisible" : "0",
+        "scrollLine" : "25",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

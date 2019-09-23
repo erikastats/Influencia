@@ -1,0 +1,7 @@
+"0","# Importando a tabela dos artistas"
+"0","artistas = read.csv(""../data/Artistas.csv"", header = T, encoding = ""UTF-8"", stringsAsFactors = F)"
+"0","artistas = artistas[,-1]"
+"0","# Corrigindo o link da cantora IZA e Daniel"
+"0","artistas$Link[36] = ""https://pt.wikipedia.org/wiki/Iza_(cantora)"""
+"0","artistas$Link[46] = paste(artistas$Link[46], ""_(cantor)"", sep = """")"
+"0","artistas"

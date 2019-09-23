@@ -1,0 +1,128 @@
+---
+title: "Rede de influências"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+# Intro
+
+Esse notebook mostra o passo a passo de como extrair as influências de artistas a partir da Wikipedia e gerar um grafo para visualizar esses dados.
+
+```{r carrega_bibliotecas_necessarias}
+# Bibliotecas
+
+library(tidyverse)
+library(rvest)
+library(igraph)
+library(visNetwork)
+
+source("parse_influencias_wikipedia.R")
+```
+
+# Data Input
+
+```{r leitura_dados}
+
+# Importando a tabela dos artistas
+artistas = read.csv("../data/Artistas.csv", header = T, encoding = "UTF-8", stringsAsFactors = F)
+artistas = artistas[,-1]
+
+# Corrigindo o link da cantora IZA e Daniel
+artistas$Link[36] = "https://pt.wikipedia.org/wiki/Iza_(cantora)"
+artistas$Link[46] = paste(artistas$Link[46], "_(cantor)", sep = "")
+
+artistas
+```
+
+# Extração de influências
+
+A função `extrai_influencias` que está no script `parse_influencias_wikipedia.R` extrai a lista de artistas citados como influentes na página da Wikipedia de um artista informado. A função retorna um DataFrame com todas as influências e links.
+
+Exemplo da Marília Mendonça:
+
+```{r exemplo_marilia_mendonca}
+
+extrair_influencias(artistas$Link[1], artistas$Nome[1])
+```
+
+Para repetir isso para todos os artistas no DataFrame `artistasDF`, basta usar a função `compila_todas_influencias`:
+
+```{r}
+influencias <- compila_todas_influencias(artistas)
+```
+
+Que resulta nesse DataFrame:
+
+```{r}
+influencias
+```
+
+Os artistas que são influenciados por `NA` são aqueles que não tem a "caixinha de influências" na sua página da Wikipedia.
+
+# Extrair influências dos artistas influenciadores
+
+Agora que temos uma função que recupera a influência de qualquer artista, podemos ir uma camada a mais e extrair quem influenciou os influenciadores :D. 
+
+O DataFrame `influencias` tem alguns influenciadores repetidos (coluna `influenciado_por`):
+
+```{r}
+sort(table(influencias$influenciado_por), decreasing = TRUE)
+```
+
+Alguns desses influenciadores também fazem parte da lista de artistas mais tocados em 2018 (O compilado que tá no DF `artistas`):
+
+```{r}
+quais_artistas <- which(influencias$influenciado_por %in% artistas$Nome)
+influencias$influenciado_por[quais_artistas]
+```
+
+Para esses casos, a gente não precisa extrair os influenciadores de novo, a gente já tem essa informação no DataFrame `influencias`!
+
+Vamos pegar somente os casos que não extraimos ainda e gerar um novo compilado:
+
+```{r}
+#Cria um DataFrame com os artistas únicos (exlui os repetidos)
+artistas_influenciadores <- data.frame(Nome=as.character(unique(influencias$influenciado_por)),
+                                       Link=as.character(unique(influencias$link_artista_influencia)),
+                                       stringsAsFactors = FALSE)
+
+# Remove casos inválidos e os artistas que já foram capturados (ou seja, já estão em artistas$Link)
+artistas_a_extrair <- !is.na(artistas_influenciadores$Nome) & !(artistas_influenciadores$Link %in% artistas$Link)
+
+artistas_influenciadores <- artistas_influenciadores[artistas_a_extrair,]
+```
+
+Vamos então extrair então as influências dos influenciadores:
+
+```{r}
+influencia_dos_influenciadores <- compila_todas_influencias(artistas_influenciadores)
+```
+
+Que resulta no DF a seguir:
+
+```{r}
+influencia_dos_influenciadores
+```
+
+# Grafo de influência
+
+Vamos combinar todas essas informações e gerar um grafo:
+
+```{r}
+todas_influencias <- rbind(influencias, influencia_dos_influenciadores)
+
+#Não precisa entender muito bem isso aqui por enquanto
+todos_artistas <- union(todas_influencias$artista, todas_influencias$influenciado_por)
+nodes <- data.frame(id=1:length(todos_artistas), label=todos_artistas, group=factor(todos_artistas %in% artistas$Nome))
+edges <- data.frame(from=as.numeric(factor(todas_influencias$artista, levels=todos_artistas)),
+                    to=as.numeric(factor(todas_influencias$influenciado_por, levels=todos_artistas)),
+                    arrows="to")
+
+```
+
+```{r}
+visNetwork(nodes, edges) %>% visLegend(main="Artista é sucesso em 2018?")
+```
+
+
